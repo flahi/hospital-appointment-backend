@@ -1,10 +1,10 @@
 const express = require('express');
 const patientRoute = express.Router();
-const patientScehma = require("../model/patientSchema");
+const patientSchema = require("../model/patientSchema");
 const mongoose = require('mongoose');
 
 patientRoute.get("/",(req,res)=>{
-    patientScehma.find((err,data)=>{
+    patientSchema.find((err,data)=>{
         if(err) return err;
         else res.json(data);
     })
@@ -24,7 +24,7 @@ patientRoute.post("/createPatient",(req, res)=>{
 
 patientRoute.route("/update-patient/:id")
 .get((req,res)=>{
-    PatientScehma.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
+    PatientSchema.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
         if(err) return err;
         else res.json(data);
     })
