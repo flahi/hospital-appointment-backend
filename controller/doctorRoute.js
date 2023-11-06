@@ -1,21 +1,34 @@
-
 const express=require("express");
-const doctorchema = require("../model/doctorSchema");
 const doctorSchema = require("../model/doctorSchema");
 const mongoose=require("mongoose")
 const doctorRoute=express.Router();
-studentRoute.post("/create-doctor")
-studentRoute.get("/",(req,res)=>{
-        studentschema.find((err,data)=>{
-            if(err)
-                return err;
-            else
-                res.json(data);
+
+//http://localhost:4000/doctor/createDoctor
+doctortRoute.post("/createDoctor",(req, res)=>{
+    doctorSchema.create(req.body,(err,data)=>{
+        if (err) {
+            return err;
         }
-        
-        )
+        else {
+            res.json(data);
+        }
     })
-doctorRoute.route("/update-doctor").get((req,res)=>{
+})
+
+//http://localhost:4000/doctor
+doctorRoute.get("/",(req,res)=>{
+    doctorschema.find((err,data)=>{
+        if(err) {
+            return err;
+        }
+        else {
+            res.json(data);
+        }
+    })
+})
+
+//http://localhost:4000/doctor/updateDoctor
+doctorRoute.route("/updateDoctor/:id").get((req,res)=>{
 doctorSchema.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
     if(err)
         return err;
@@ -30,8 +43,10 @@ doctorSchema.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
         res.json(data)
     })
 })
-studentRoute.delete("/delete-doctor/:id",(req,res)=>{
-    studentSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
+
+//http://localhost:4000/doctor/deleteDoctor/:id
+doctorRoute.delete("/deleteDoctor/:id",(req,res)=>{
+    doctorSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
         if(err)
         return err;
     else

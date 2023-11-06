@@ -3,7 +3,8 @@ const mongoose = require("mongoose");
 const testBooking = require("../model/testBookingSchema");
 const testBookingRoute = express.Router();
 
-testBookingRoute.post("/create-test-booking", (req, res) => {
+//http://localhost:4000/testBooking/cTestBooking
+testBookingRoute.post("/cTestBooking", (req, res) => {
   const {
     testName,
     testType,
@@ -41,6 +42,7 @@ testBookingRoute.post("/create-test-booking", (req, res) => {
   );
 });
 
+//http://localhost:4000/testBooking
 testBookingRoute.get("/", (req, res) => {
   testBooking.find((err, data) => {
     if (err) {
@@ -51,8 +53,9 @@ testBookingRoute.get("/", (req, res) => {
   });
 });
 
+//http://localhost:4000/testBooking/updateTestBooking/:id
 testBookingRoute
-  .route("/update-test-booking/:id")
+  .route("/updateTestBooking/:id")
   .get((req, res) => {
     testBooking.findById(req.params.id, (err, data) => {
       if (err) {
@@ -79,7 +82,8 @@ testBookingRoute
     );
   });
 
-testBookingRoute.delete("/delete-test-booking/:id", (req, res) => {
+//http://localhost:4000/testBooking/deleteTestBooking/:id
+testBookingRoute.delete("/deleteTestBooking/:id", (req, res) => {
   testBooking.findByIdAndRemove(req.params.id, (err, data) => {
     if (err) {
       return res.status(500).json({ error: "Failed to delete test booking." });

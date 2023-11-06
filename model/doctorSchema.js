@@ -5,7 +5,7 @@ const doctorSchema=new mongoose.Schema({
     "qualification":{type:String},
     "password":{type:String}
 },{
-    collection:"doctors"
+    collection:"doctor"
 }
 )
 module.exports=mongoose.model("doctorschema",doctorSchema);

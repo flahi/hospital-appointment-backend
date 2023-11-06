@@ -3,6 +3,7 @@ const reportSchema = require("../model/reportSchema");
 const reportRoute = express.Router();
 
 // POST endpoint to allow doctors to upload reports
+//http://localhost:4000/report/upload
 reportRoute.post("/upload", (req, res) => {
   try {
     const { name, patientId } = req.body;
@@ -29,6 +30,7 @@ reportRoute.post("/upload", (req, res) => {
 });
 
 // GET endpoint to retrieve a specific report
+//http://localhost:4000/report/download/:reportId
 reportRoute.get("/download/:reportId", (req, res) => {
   const reportId = req.params.reportId;
 
