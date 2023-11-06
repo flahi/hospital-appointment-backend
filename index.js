@@ -6,6 +6,7 @@ const appointmentRoute = require("./controller/appointmentRoute");
 const reportRoute = require("./controller/reportRoute");
 const patientRoute = require("./controller/patientRoute");
 const doctorRoute = require("./controller/doctorRoute")
+const testBookingRoute = require("./controller/testBookingRoute");
 
 
 //MongoDB connection
@@ -26,6 +27,7 @@ app.use("/appointment",appointmentRoute);
 app.use("/report",reportRoute);
 app.use("/patient",patientRoute);
 app.use("/doctor",doctorRoute);
+app.use("/testBooking",testBookingRoute);
 
 //Listening to port number
 app.listen(4000,()=>{
