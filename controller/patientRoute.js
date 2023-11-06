@@ -1,17 +1,17 @@
 const express = require('express');
-const PatientRoute = express.Router();
-const PatientScehma = require("../model/PatientSchema");
+const patientRoute = express.Router();
+const patientScehma = require("../model/patientSchema");
 const mongoose = require('mongoose');
 
-PatientRoute.get("/",(req,res)=>{
-    PatientScehma.find((err,data)=>{
+patientRoute.get("/",(req,res)=>{
+    patientScehma.find((err,data)=>{
         if(err) return err;
         else res.json(data);
     })
 })
 
-PatientRoute.post("/createPatient",(req, res)=>{
-    PatientSchema.create(req.body,(err,data)=>{
+patientRoute.post("/createPatient",(req, res)=>{
+    patientSchema.create(req.body,(err,data)=>{
         if (err) {
             return err;
         }
@@ -22,7 +22,7 @@ PatientRoute.post("/createPatient",(req, res)=>{
 })
 
 
-PatientRoute.route("/update-patient/:id")
+patientRoute.route("/update-patient/:id")
 .get((req,res)=>{
     PatientScehma.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
         if(err) return err;
@@ -43,8 +43,8 @@ PatientRoute.route("/update-patient/:id")
 });
 
 
-PatientRoute.delete("/deletePatient/:id",(req,res)=>{
-    PatientSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id),(err, data)=>{
+patientRoute.delete("/deletePatient/:id",(req,res)=>{
+    patientSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id),(err, data)=>{
         if (err) {
             return err;
         }
@@ -55,4 +55,4 @@ PatientRoute.delete("/deletePatient/:id",(req,res)=>{
 })
 
 
-module.exports=PatientRoute;
+module.exports=patientRoute;

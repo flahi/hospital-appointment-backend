@@ -9,7 +9,7 @@ const PatientSchema = new mongoose.Schema({
     "Address": { type: String },
     "dob": { type: String },
 }, {
-    collection: "patients"
+    collection: "patient"
 });
 
-module.exports = mongoose.model("PatientSchema", PatientSchema);
+module.exports = mongoose.model("patientSchema", patientSchema);
