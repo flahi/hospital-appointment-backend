@@ -4,7 +4,7 @@ const mongoose=require("mongoose")
 const doctorRoute=express.Router();
 
 //http://localhost:4000/doctor/createDoctor
-doctortRoute.post("/createDoctor",(req, res)=>{
+doctorRoute.post("/createDoctor",(req, res)=>{
     doctorSchema.create(req.body,(err,data)=>{
         if (err) {
             return err;
