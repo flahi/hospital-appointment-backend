@@ -17,7 +17,7 @@ doctorRoute.post("/createDoctor",(req, res)=>{
 
 //http://localhost:4000/doctor
 doctorRoute.get("/",(req,res)=>{
-    doctorschema.find((err,data)=>{
+    doctorSchema.find((err,data)=>{
         if(err) {
             return err;
         }
