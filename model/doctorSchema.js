@@ -1,6 +1,7 @@
 const mongoose=require("mongoose");
 const doctorSchema=new mongoose.Schema({
-    "name":{type:String},
+    "doctorName":{type:String},
+    "doctorId":{type:Number},
     "specialization":{type:String},
     "qualification":{type:String},
     "password":{type:String}
@@ -8,4 +9,4 @@ const doctorSchema=new mongoose.Schema({
     collection:"doctor"
 }
 )
-module.exports=mongoose.model("doctorschema",doctorSchema);
+module.exports=mongoose.model("doctorSchema",doctorSchema);

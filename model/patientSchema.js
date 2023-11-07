@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
 const PatientSchema = new mongoose.Schema({
-    "pid": { type: String },
-    "firstname": { type: String },
-    "lastname": { type: String },
-    "emailid": { type: String },
-    "phoneno": { type: Number },
-    "Address": { type: String },
-    "dob": { type: String },
+    "patientId": { type: Number },
+    "patientName": { type: String },
+    "email": { type: String },
+    "phoneNo": { type: String},
+    "address": { type: String },
+    "dob": { type: Date },
 }, {
     collection: "patient"
 });
