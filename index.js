@@ -7,6 +7,7 @@ const reportRoute = require("./controller/reportRoute");
 const patientRoute = require("./controller/patientRoute");
 const doctorRoute = require("./controller/doctorRoute");
 const testBookingRoute = require("./controller/testBookingRoute");
+const patientOtpRoute = require("./controller/patientOtpRoute");
 const { loginUser, authenticateUser } = require("./controller/authController");
 
 // MongoDB connection
@@ -29,6 +30,7 @@ app.use("/report", reportRoute);
 app.use("/patient", patientRoute);
 app.use("/doctor", doctorRoute);
 app.use("/testBooking", testBookingRoute);
+app.use("/patientOtp", patientOtpRoute);
 
 // Create a route for user login
 app.post("/login", loginUser);
