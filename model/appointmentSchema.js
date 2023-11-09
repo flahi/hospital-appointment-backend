@@ -4,7 +4,8 @@ const appointmentSchema = new mongoose.Schema({
     "appointmentId":{type :Number},
     "slot":{type:String},
     "patientId":{type:Number},
-    "doctorId":{type:Number}
+    "doctorId":{type:Number},
+    "reasonforappointment":{type:String}
 },{
     collection:"appointment"
 });
