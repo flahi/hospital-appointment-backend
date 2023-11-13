@@ -18,7 +18,7 @@ function loginUser(req, res) {
         });
         return res.status(200).json({ token, role: user.role });
       } else {
-        return res.status(401).json({ message: "Invalid password" });
+        return res.status(402).json({ message: "Invalid password" });
       }
     })
     .catch((error) => {
