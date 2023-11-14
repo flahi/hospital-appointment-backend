@@ -11,6 +11,24 @@ patientRoute.get("/",(req,res)=>{
     })
 })
 
+//http://localhost:4000/patient/getPatient
+patientRoute.get("/getPatient", async (req, res) => {
+    const email = req.body;
+    if (!email) {
+        return res.status(400).json({ error: "Please provide an email" });
+    }
+    try {
+        const patients = await patientSchema.find({ email: email });
+        if (patients.length === 0) {
+            return res.status(404).json({ error: "No patient found with the provided email" });
+        }
+        res.status(200).json(patients);
+    } catch (error) {
+        console.log("error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 //http://localhost:4000/patient/createPatient
 patientRoute.post("/createPatient",(req, res)=>{
     patientSchema.create(req.body,(err,data)=>{

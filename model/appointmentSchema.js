@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 const appointmentSchema = new mongoose.Schema({
     "appointmentDate":{type:Date},
     "appointmentId":{type :Number},
+    "email":{type:String},
     "slot":{type:String},
-    "patientId":{type:Number},
     "doctorId":{type:Number},
     "reasonforappointment":{type:String}
 },{
