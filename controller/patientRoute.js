@@ -13,14 +13,14 @@ patientRoute.get("/",(req,res)=>{
 
 //http://localhost:4000/patient/getPatient
 patientRoute.get("/getPatient", async (req, res) => {
-    const email = req.body;
-    if (!email) {
-        return res.status(400).json({ error: "Please provide an email" });
+    const {email, patientName} = req.query;
+    if (!email||!patientName) {
+        return res.status(400).json({ error: "Please provide an email or name" });
     }
     try {
-        const patients = await patientSchema.find({ email: email });
+        const patients = await patientSchema.find({ email: email, patientName:patientName });
         if (patients.length === 0) {
-            return res.status(404).json({ error: "No patient found with the provided email" });
+            return res.status(404).json({ error: "No patient found with the provided email and name" });
         }
         res.status(200).json(patients);
     } catch (error) {

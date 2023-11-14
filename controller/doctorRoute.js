@@ -15,6 +15,24 @@ doctorRoute.post("/createDoctor",(req, res)=>{
     })
 })
 
+//http://localhost:4000/doctor/getDoctor
+doctorRoute.get("/getDoctor", async (req, res) => {
+    const {doctorId} = req.query;
+    if (!doctorId) {
+        return res.status(400).json({ error: "Please provide doctor ID" });
+    }
+    try {
+        const doctors = await doctorSchema.find({ doctorId: doctorId });
+        if (doctors.length === 0) {
+            return res.status(404).json({ error: "No doctor found with the provided doctor id" });
+        }
+        res.status(200).json(doctors);
+    } catch (error) {
+        console.log("error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 //http://localhost:4000/doctor
 doctorRoute.get("/",(req,res)=>{
     doctorSchema.find((err,data)=>{

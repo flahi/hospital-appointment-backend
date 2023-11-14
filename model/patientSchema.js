@@ -4,7 +4,6 @@ const validator = require("validator");
 const SECRET_KEY = "abcdemern";
 
 const patientSchema = new mongoose.Schema({
-    "patientId": { type: Number },
     "patientName": { type: String },
     "email": { type: String, required:true},
     "phoneNo": { type: String},
