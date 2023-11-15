@@ -4,12 +4,12 @@ const User = require('./model/userModel');
 
 const users = [
   {
-    email: 'doctor@example.com',
+    empId: 'doctor123', // Example empId
     password: bcrypt.hashSync('doctorPassword', 10),
     role: 'doctor',
   },
   {
-    email: 'admin@example.com',
+    empId: 'admin456', // Example empId
     password: bcrypt.hashSync('adminPassword', 10),
     role: 'admin',
   },
@@ -23,17 +23,17 @@ mongoose.connect('mongodb+srv://admin:12345@cluster0.mmfpfzc.mongodb.net/Sunrise
 const insertUsers = async () => {
   for (const user of users) {
     try {
-      const existingUser = await User.findOne({ email: user.email });
+      const existingUser = await User.findOne({ empId: user.empId });
 
       if (!existingUser) {
         const newUser = new User(user);
         await newUser.save();
-        console.log(`User ${user.email} added to the database.`);
+        console.log(`User ${user.empId} added to the database.`);
       } else {
-        console.log(`User ${user.email} already exists in the database.`);
+        console.log(`User ${user.empId} already exists in the database.`);
       }
     } catch (error) {
-      console.error(`Error adding user ${user.email}: ${error.message}`);
+      console.error(`Error adding user ${user.empId}: ${error.message}`);
     }
   }
 
