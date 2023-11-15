@@ -3,11 +3,9 @@ const doctorSchema=new mongoose.Schema({
     "doctorName":{type:String},
     "doctorId":{type:Number},
     "specialization":{type:String},
-    "qualification":{type:String},
-    "password":{type:String}
+    "qualification":{type:String}
 },{
     collection:"doctor"
 }
 )
 module.exports=mongoose.model("doctorSchema",doctorSchema);
-//hello
