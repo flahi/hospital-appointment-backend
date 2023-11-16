@@ -8,7 +8,7 @@ const patientRoute = require("./controller/patientRoute");
 const doctorRoute = require("./controller/doctorRoute");
 const testBookingRoute = require("./controller/testBookingRoute");
 const patientOtpRoute = require("./controller/patientOtpRoute");
-const { loginUser, authenticateUser } = require("./controller/authController");
+const { loginUser, authenticateUser, handleUnauthorized } = require("./controller/authController");
 
 // MongoDB connection
 mongoose.set("strictQuery", true);
@@ -31,16 +31,19 @@ app.use("/patient", patientRoute);
 app.use("/doctor", doctorRoute);
 app.use("/testBooking", testBookingRoute);
 app.use("/patientOtp", patientOtpRoute);
+app.use('/admin', authenticateUser);
 
 // Create a route for user login
 app.post("/login", loginUser);
 
 // Example: Protect an admin route
-app.get("/admin/dashboard", authenticateUser, (req, res) => {
-  if (req.user.role === "admin") {
-    return res.status(200).json({ message: "Welcome, admin!" });
+app.get('/admin/dashboard', (req, res) => {
+  if (req.user.role === 'admin') {
+    // Serve admin dashboard if the user is authorized
+    return res.status(200).json({ message: 'Welcome, admin!' });
   } else {
-    return res.status(403).json({ message: "Access denied" });
+    // Redirect unauthorized users to error route
+    handleUnauthorized(req, res);
   }
 });
 

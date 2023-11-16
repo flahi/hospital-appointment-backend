@@ -5,15 +5,15 @@ const User = require("../model/userModel");
 const secretKey = "your-secret-key"; // Replace with your secret key
 
 function loginUser(req, res) {
-  const { email, password } = req.body;
-  User.findOne({ email })
+  const { empId, password } = req.body;
+  User.findOne({ empId })
     .then((user) => {
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
 
       if (bcrypt.compareSync(password, user.password)) {
-        const token = jwt.sign({ email, role: user.role }, secretKey, {
+        const token = jwt.sign({ empId, role: user.role }, secretKey, {
           expiresIn: "1h",
         });
         return res.status(200).json({ token, role: user.role });
@@ -44,7 +44,12 @@ function authenticateUser(req, res, next) {
   });
 }
 
+function handleUnauthorized(req, res) {
+  return res.redirect('/error'); // Redirect unauthorized users to error route
+}
+
 module.exports = {
   loginUser,
   authenticateUser,
+  handleUnauthorized,
 };

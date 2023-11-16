@@ -4,12 +4,12 @@ const User = require('./model/userModel');
 
 const users = [
   {
-    empId: 'doctor123', // Example empId
+    empId: 100, // Example empId for 'doctor'
     password: bcrypt.hashSync('doctorPassword', 10),
     role: 'doctor',
   },
   {
-    empId: 'admin456', // Example empId
+    empId: 1, // Example empId for 'admin'
     password: bcrypt.hashSync('adminPassword', 10),
     role: 'admin',
   },

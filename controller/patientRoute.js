@@ -13,21 +13,44 @@ patientRoute.get("/",(req,res)=>{
 
 //http://localhost:4000/patient/getPatient
 patientRoute.get("/getPatient", async (req, res) => {
-    const {email, patientName} = req.query;
-    if (!email||!patientName) {
-        return res.status(400).json({ error: "Please provide an email or name" });
-    }
+    const { email, patientName } = req.query;
+
     try {
-        const patients = await patientSchema.find({ email: email, patientName:patientName });
-        if (patients.length === 0) {
-            return res.status(404).json({ error: "No patient found with the provided email and name" });
+        let query = {};
+
+        if (email) {
+            query.email = email;
         }
+
+        if (patientName) {
+            query.patientName = { $regex: new RegExp(patientName, 'i') };
+        }
+
+        const patients = await patientSchema.find(query);
+
+        if (patients.length === 0) {
+            return res.status(404).json({ error: "No patient found with the provided criteria" });
+        }
+
         res.status(200).json(patients);
     } catch (error) {
         console.log("error:", error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 });
+
+
+// http://localhost:4000/patient/getAllPatients
+patientRoute.get("/getAllPatients", async (req, res) => {
+    try {
+        const patients = await patientSchema.find();
+        res.status(200).json(patients);
+    } catch (error) {
+        console.log("error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
 
 //http://localhost:4000/patient/createPatient
 patientRoute.post("/createPatient",(req, res)=>{

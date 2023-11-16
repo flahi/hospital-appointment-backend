@@ -33,6 +33,18 @@ doctorRoute.get("/getDoctor", async (req, res) => {
     }
 });
 
+// http://localhost:4000/doctor/getAllDoctors
+doctorRoute.get("/getAllDoctors", async (req, res) => {
+    try {
+        const doctors = await doctorSchema.find();
+        res.status(200).json(doctors);
+    } catch (error) {
+        console.log("error:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+
 //http://localhost:4000/doctor
 doctorRoute.get("/",(req,res)=>{
     doctorSchema.find((err,data)=>{
@@ -45,22 +57,29 @@ doctorRoute.get("/",(req,res)=>{
     })
 })
 
-//http://localhost:4000/doctor/updateDoctor
-doctorRoute.route("/updateDoctor/:id").get((req,res)=>{
-doctorSchema.find(mongoose.Types.ObjectId(req.params.id),(err,data)=>{
-    if(err)
-        return err;
-    else
-        res.json(data)
-})
-}).put((req,res)=>{
-    doctorSchema.findByIdAndUpdate(mongoose.Types.ObjectId(req.params.id),{$set: req.body},(err,data)=>{
-        if(err)
-        return err;
-    else
-        res.json(data)
-    })
-})
+// http://localhost:4000/doctor/updateDoctor/:id
+doctorRoute.put("/updateDoctor/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const updatedDoctor = req.body;
+  
+      const doctor = await doctorSchema.findByIdAndUpdate(
+        id,
+        { $set: updatedDoctor },
+        { new: true }
+      );
+  
+      if (!doctor) {
+        return res.status(404).json({ error: "Doctor not found" });
+      }
+  
+      res.status(200).json(doctor);
+    } catch (error) {
+      console.error("Error updating doctor:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
+  
 
 //http://localhost:4000/doctor/deleteDoctor/:id
 doctorRoute.delete("/deleteDoctor/:id",(req,res)=>{
