@@ -16,7 +16,28 @@ appointmentRoute.post("/createAppointment", async (req, res) => {
 });
 
 // http://localhost:4000/appointment/checkAvailability
-appointmentRoute.get("/checkAvailability", async(req, res) => {})
+appointmentRoute.get("/checkAvailability", async (req, res) => {
+  const { doctorId, appointmentDate, slot } = req.query;
+
+  try {
+    const existingAppointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: appointmentDate,
+      slot: slot,
+    });
+
+    if (existingAppointments && existingAppointments.length > 0) {
+      // Appointment slot is already booked
+      res.status(200).json({ available: false, message: "Slot not available for this doctor at this time" });
+    } else {
+      // Appointment slot is available
+      res.status(200).json({ available: true, message: "Slot available for booking" });
+    }
+  } catch (error) {
+    console.error("Error checking availability:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 // http://localhost:4000/appointment/getAppointment
 appointmentRoute.get("/getAppointment", async (req, res) => {
