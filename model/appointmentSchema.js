@@ -5,7 +5,9 @@ const appointmentSchema = new mongoose.Schema({
     "email":{type:String},
     "slot":{type:String},
     "doctorId":{type:Number},
-    "reasonforappointment":{type:String}
+    "reasonforappointment":{type:String},
+    "isCompleted":{type:Boolean},
+    "isModified":{type:Boolean}
 },{
     collection:"appointment"
 });
