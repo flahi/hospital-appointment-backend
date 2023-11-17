@@ -48,8 +48,63 @@ function handleUnauthorized(req, res) {
   return res.redirect('/error'); // Redirect unauthorized users to error route
 }
 
+function changeDoctorPassword(req, res) {
+  const { empId, newPassword } = req.body;
+  console.log('Requested empId:', empId);
+
+  // Retrieve the token from the request header
+  const token = req.headers.authorization;
+  console.log('Received token:', token);
+
+  // Verify the token
+  jwt.verify(token, secretKey, (err, decoded) => {
+    if (err) {
+      console.error('Token verification error:', err);
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log('Decoded token:', decoded);
+
+    // Check if the user ID from the token matches the requested user ID and role is 'doctor'
+    if (decoded.empId !== empId || decoded.role !== 'doctor') {
+      return res.status(401).json({ message: "Unauthorized access to change password" });
+    }
+
+    // Find the user by empId in the database
+    User.findOne({ empId })
+      .then((user) => {
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        // Hash the new password before updating in the database
+        const hashedPassword = bcrypt.hashSync(newPassword, 10);
+
+        console.log('Updating password for:', empId);
+
+        // Update the user's password with the new hashed password
+        user.password = hashedPassword;
+
+        // Save the updated user object
+        user.save()
+          .then(() => {
+            return res.status(200).json({ message: "Password updated successfully" });
+          })
+          .catch((error) => {
+            console.error('Error updating password:', error);
+            return res.status(500).json({ message: "Error updating password", error });
+          });
+      })
+      .catch((error) => {
+        console.error('Database error:', error);
+        return res.status(500).json({ message: "An error occurred", error });
+      });
+  });
+}
+
 module.exports = {
   loginUser,
   authenticateUser,
   handleUnauthorized,
+  changeDoctorPassword, // Include the changeDoctorPassword function in the module exports
 };

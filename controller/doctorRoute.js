@@ -3,6 +3,7 @@ const express = require("express");
 const doctorSchema = require("../model/doctorSchema");
 const mongoose = require("mongoose");
 const doctorRoute = express.Router();
+const { changeDoctorPassword } = require("../controller/authController");
 
 // http://localhost:4000/doctor/createDoctor
 doctorRoute.post("/createDoctor", (req, res) => {
@@ -155,4 +156,8 @@ doctorRoute.delete("/deleteDoctor/:id",(req,res)=>{
         res.json(data)
     })
 })
+
+// Route to change password for doctors
+doctorRoute.post("/changePassword", changeDoctorPassword);
+
 module.exports=doctorRoute;
