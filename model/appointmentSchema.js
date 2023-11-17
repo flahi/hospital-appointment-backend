@@ -7,7 +7,7 @@ const appointmentSchema = new mongoose.Schema({
     "doctorId":{type:Number},
     "reasonforappointment":{type:String},
     "isCompleted":{type:Boolean},
-    "isModified":{type:Boolean}
+    "isChanged":{type:Boolean}
 },{
     collection:"appointment"
 });

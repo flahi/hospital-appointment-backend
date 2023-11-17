@@ -3,12 +3,12 @@ const mongoose = require("mongoose");
 const testBookingSchema = new mongoose.Schema(
   {
     "testName": { type: String },
-    "testType": { type: String },
-    "patientId": { type: Number },
+    "email": { type: String },
     "testDate": { type: Date },
-    "doctorId": { type: Number },
-    "results": { type: String },
-    "isCompleted": { type: Boolean },
+    "slot": { type:String },
+    "dob": { type:Date },
+    "patientName": { type:String },
+    "address": { type:String }
   },
   {
     collection: "test",
