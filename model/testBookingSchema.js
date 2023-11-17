@@ -15,4 +15,6 @@ const testBookingSchema = new mongoose.Schema(
   }
 );
 
+testBookingSchema.index({ testDate: 1, slot: 1 });
+
 module.exports = mongoose.model("testBookingSchema", testBookingSchema);

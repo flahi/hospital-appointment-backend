@@ -8,6 +8,7 @@ const patientRoute = require("./controller/patientRoute");
 const doctorRoute = require("./controller/doctorRoute");
 const testBookingRoute = require("./controller/testBookingRoute");
 const patientOtpRoute = require("./controller/patientOtpRoute");
+const testRoute = require("./controller/testRoute");
 const { loginUser, authenticateUser, handleUnauthorized } = require("./controller/authController");
 
 // MongoDB connection
@@ -26,6 +27,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use("/appointment", appointmentRoute);
+app.use("/test", testRoute);
 app.use("/report", reportRoute);
 app.use("/patient", patientRoute);
 app.use("/doctor", doctorRoute);
