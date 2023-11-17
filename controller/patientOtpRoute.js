@@ -173,18 +173,23 @@ patientOtpRoute.post("/sendOtp", async(req, res)=>{
     }
 })
 
+//http://localhost:4000/patientOtp/status
 patientOtpRoute.post("/status",async(req, res)=>{
-    const {email, otp} = req.body;
+    const {email, otp, option} = req.body;
+    const message = "Appointment scheduled successfully";
     if (!otp||!email) {
         res.status(400).json({error:"Please enter otp"});
     }
     try {
         const otpVerification = await patientOtpSchema.findOne({email:email});
         if (otpVerification.otp===otp){
+          const token = 123;
+          if (option==="1") {
             const preuser = await patientSchema.findOne({email:email});
-            //Token generation
-            const token = await preuser.generateAuthtoken(res);
-            res.status(200).json({message:"Patient login success", userToken:token});
+            token = await preuser.generateAuthtoken(res);
+            message = "Patient login success";
+          }
+            res.status(200).json({message:message, userToken:token});
         }
         else {
             res.status(400).json({error:"Invalid Otp"});
