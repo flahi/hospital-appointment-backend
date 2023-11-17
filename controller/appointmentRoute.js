@@ -18,12 +18,8 @@ const appointmentRoute = express.Router();
 appointmentRoute.post("/createAppointment", async (req, res) => {
   try {
       const { email, patientName } = req.body;
-
       const appointment = await appointmentSchema.create(req.body);
-
-      // Format the date to show only the date without the time
       const formattedDate = moment(appointment.appointmentDate).format('MMMM D, YYYY');
-
       const mailOptions = {
           from: "sunrisehealthcareforyou@gmail.com",
           to: email,
@@ -49,7 +45,6 @@ appointmentRoute.post("/createAppointment", async (req, res) => {
               </html>
           `,
       };
-
       transporter.sendMail(mailOptions, (err, data) => {
           if (err) {
               res.status(400).json({ error: "Email not sent" });
@@ -146,6 +141,38 @@ appointmentRoute.route("/updateAppointment/:id")
 appointmentRoute.delete("/deleteAppointment/:id", async (req, res) => {
   try {
     const appointment = await appointmentSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id));
+    const { email, patientName, appointmentDate, slot } = appointment;
+    const formattedDate = moment(appointmentDate).format('MMMM D, YYYY');
+    const mailOptions = {
+      from: "sunrisehealthcareforyou@gmail.com",
+      to: email,
+      subject: "Sunrise Healthcare - Appointment Cancellation",
+      html: `
+          <html>
+              <head>
+                  <style>
+                      body {
+                          background-color: #f0f0f0; /* Set your desired background color */
+                      }
+                  </style>
+              </head>
+              <body>
+                  <p>Dear ${patientName},</p>
+                  <p>Your appointment on ${formattedDate}, at ${slot} has been canceled.</p>
+                  <p>We apologize for any inconvenience. If you have any concerns, please contact us.</p>
+                  <p>Thank you for choosing Sunrise Healthcare.</p>
+              </body>
+          </html>
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.error("Email not sent:", err);
+      } else {
+        console.log("Email sent for appointment cancellation");
+      }
+    });
     res.json(appointment);
   } catch (error) {
     console.error("Error deleting appointment:", error);
