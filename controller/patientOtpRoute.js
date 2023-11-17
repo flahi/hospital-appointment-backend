@@ -176,14 +176,14 @@ patientOtpRoute.post("/sendOtp", async(req, res)=>{
 //http://localhost:4000/patientOtp/status
 patientOtpRoute.post("/status",async(req, res)=>{
     const {email, otp, option} = req.body;
-    const message = "Appointment scheduled successfully";
+    var message = "Appointment scheduled successfully";
     if (!otp||!email) {
         res.status(400).json({error:"Please enter otp"});
     }
     try {
         const otpVerification = await patientOtpSchema.findOne({email:email});
         if (otpVerification.otp===otp){
-          const token = 123;
+          var token = 123;
           if (option==="1") {
             const preuser = await patientSchema.findOne({email:email});
             token = await preuser.generateAuthtoken(res);
