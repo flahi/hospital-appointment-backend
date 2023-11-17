@@ -4,16 +4,39 @@ const doctorSchema = require("../model/doctorSchema");
 const mongoose = require("mongoose");
 const doctorRoute = express.Router();
 const { changeDoctorPassword } = require("../controller/authController");
+const User = require("../model/userModel");
+const bcrypt = require('bcrypt');
 
 // http://localhost:4000/doctor/createDoctor
-doctorRoute.post("/createDoctor", (req, res) => {
-  doctorSchema.create(req.body, (err, data) => {
-    if (err) {
-      return err;
-    } else {
-      res.json(data);
-    }
-  });
+doctorRoute.post("/createDoctor", async (req, res) => {
+  try {
+    const { doctorId, doctorName, specialization, qualification, password } = req.body;
+
+    // Create a doctor in the doctorSchema
+    const newDoctor = await doctorSchema.create({
+      doctorId,
+      doctorName,
+      specialization,
+      qualification,
+    });
+
+    console.log('Doctor created:', newDoctor);
+    // Create a user in the users collection using the provided password and doctorId
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    const createdUser = await User.create({
+      empId: doctorId,
+      password: hashedPassword,
+      role: "doctor",
+    });
+
+    console.log('User created:', createdUser);
+
+    res.status(201).json(newDoctor);
+  } catch (error) {
+    console.error('Error creating doctor:', error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
 
 // http://localhost:4000/doctor
@@ -44,15 +67,24 @@ doctorRoute.route("/updateDoctor/:id").get((req, res) => {
   );
 });
 
-// http://localhost:4000/doctor/deleteDoctor/:id
-doctorRoute.delete("/deleteDoctor/:id", (req, res) => {
-  doctorSchema.findByIdAndRemove(
-    mongoose.Types.ObjectId(req.params.id),
-    (err, data) => {
-      if (err) return err;
-      else res.json(data);
+doctorRoute.delete('/deleteDoctor/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Find the doctor by ID and delete
+    const deletedDoctor = await doctorSchema.findByIdAndRemove(id);
+
+    // Delete the corresponding user from the users collection based on empId
+    if (deletedDoctor) {
+      await User.deleteOne({ empId: deletedDoctor.doctorId });
+      res.json(deletedDoctor);
+    } else {
+      res.status(404).json({ error: 'Doctor not found' });
     }
-  );
+  } catch (error) {
+    console.error('Error deleting doctor:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 // http://localhost:4000/doctor/specialties
