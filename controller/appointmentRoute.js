@@ -1,18 +1,63 @@
 const express = require("express");
 const appointmentSchema = require("../model/appointmentSchema");
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+    service:"gmail",
+    auth:{
+        user:"sunrisehealthcareforyou@gmail.com",
+        pass:"nrbzeuzcqwgjsusd"
+    }
+})
 
 const appointmentRoute = express.Router();
 
 // http://localhost:4000/appointment/createAppointment
 appointmentRoute.post("/createAppointment", async (req, res) => {
-  try {
-    const appointment = await appointmentSchema.create(req.body);
-    res.json(appointment);
-  } catch (error) {
-    console.error("Error creating appointment:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
+    try {
+        const { email, patientName } = req.body;
+
+        const appointment = await appointmentSchema.create(req.body);
+        const mailOptions = {
+            from: "sunrisehealthcareforyou@gmail.com",
+            to: email,
+            subject: "Sunrise Healthcare - Appointment Confirmation",
+            html: `
+                <html>
+                    <head>
+                        <style>
+                            body {
+                                background-color: #f0f0f0; /* Set your desired background color */
+                            }
+                        </style>
+                    </head>
+                    <body>
+                        <p>Dear ${patientName},</p>
+                        <p>Your appointment has been booked successfully!</p>
+                        <h3>Appointment Details:</h3>
+                        <p>Date: ${appointment.appointmentDate}</p>
+                        <p>Slot: ${appointment.slot}</p>
+                        <p>Doctor ID: ${appointment.doctorId}</p>
+                        <p>Reason for Appointment: ${appointment.reasonforappointment}</p>
+                        <p>Thank you for choosing Sunrise Healthcare.</p>
+                    </body>
+                </html>
+            `,
+        };
+
+        transporter.sendMail(mailOptions, (err, data) => {
+            if (err) {
+                res.status(400).json({ error: "Email not sent" });
+            } else {
+                console.log("Email sent");
+                res.json(appointment);
+            }
+        });
+    } catch (error) {
+        console.error("Error creating appointment:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
 });
 
 // http://localhost:4000/appointment/checkAvailability

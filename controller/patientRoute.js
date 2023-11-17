@@ -53,16 +53,20 @@ patientRoute.get("/getAllPatients", async (req, res) => {
 
 
 //http://localhost:4000/patient/createPatient
-patientRoute.post("/createPatient",(req, res)=>{
-    patientSchema.create(req.body,(err,data)=>{
-        if (err) {
-            return err;
-        }
-        else {
-            res.json(data);
-        }
-    })
-})
+patientRoute.post("/createPatient", async (req, res) => {
+    const { email, patientName } = req.body;
+    try {
+      const existingPatient = await patientSchema.findOne({ email, patientName });
+      if (existingPatient) {
+        return res.status(200).json({ message: "Patient already exists" });
+      }
+      const patient = await patientSchema.create(req.body);
+      res.status(200).json(patient);
+    } catch (error) {
+      console.error("Error creating patient:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  });
 
 //http://localhost:4000/patient/updatePatient/:id
 patientRoute.route("/updatePatient/:id")
