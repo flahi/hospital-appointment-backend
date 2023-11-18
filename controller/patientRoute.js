@@ -29,7 +29,7 @@ patientRoute.get("/getPatient", async (req, res) => {
         const patients = await patientSchema.find(query);
 
         if (patients.length === 0) {
-            return res.status(404).json({ error: "No patient found with the provided criteria" });
+            return res.status(200).json({ message: "No patient found with the provided criteria" });
         }
 
         res.status(200).json(patients);

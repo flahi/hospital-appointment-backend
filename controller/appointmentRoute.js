@@ -101,6 +101,30 @@ appointmentRoute.get("/getAppointment", async (req, res) => {
   }
 });
 
+// http://localhost:4000/appointment/getAppointmentForDoctor
+appointmentRoute.get('/getAppointmentForDoctor', async (req, res) => {
+  const { doctorId } = req.query;
+  if (!doctorId) {
+    return res.status(400).json({ error: 'Please provide doctor ID' });
+  }
+  
+  try {
+    const currentDate = new Date().toISOString().split('T')[0] + 'T00:00:00Z'; // Set time to midnight
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: currentDate
+    });
+    
+    if (appointments.length === 0) {
+      return res.status(200).json({ message: 'No appointments found for the day' });
+    }
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.log('error:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // http://localhost:4000/appointment
 appointmentRoute.get("/", async (req, res) => {
   try {
