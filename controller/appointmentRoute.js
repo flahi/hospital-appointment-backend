@@ -101,6 +101,21 @@ appointmentRoute.get("/getAppointment", async (req, res) => {
   }
 });
 
+appointmentRoute.get('/getAppointmentForDoctorByDate/:doctorId/:date', async (req, res) => {
+  const { doctorId, date } = req.params;
+  try {
+    // Assuming appointmentSchema represents your Mongoose model
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: { $gte: new Date(date), $lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000) }, // Fetch appointments for the specified date
+    });
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 // http://localhost:4000/appointment/getAppointmentForDoctorToday
 appointmentRoute.get('/getAppointmentForDoctorToday', async (req, res) => {
   const { doctorId } = req.query;

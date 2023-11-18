@@ -189,6 +189,45 @@ doctorRoute.delete("/deleteDoctor/:id",(req,res)=>{
     })
 })
 
+// http://localhost:4000/doctordashboard/myappointments
+doctorRoute.get('/myappointments', async (req, res) => {
+  const { doctorId, startDate, endDate } = req.query;
+
+  try {
+    // Fetch appointments for the doctor within the specified date range
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: { $gte: startDate, $lte: endDate },
+    });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error('Error fetching doctor appointments:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// http://localhost:4000/doctordashboard/cancelappointment/:id
+doctorRoute.delete('/cancelappointment/:id', async (req, res) => {
+  const appointmentId = req.params.id;
+
+  try {
+    // Delete the appointment by ID
+    const canceledAppointment = await appointmentSchema.findByIdAndDelete(appointmentId);
+
+    if (canceledAppointment) {
+      // Send a response indicating successful cancellation
+      res.status(200).json({ message: 'Appointment canceled successfully' });
+    } else {
+      res.status(404).json({ error: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error canceling appointment:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 // Route to change password for doctors
 doctorRoute.post("/changePassword", changeDoctorPassword);
 
