@@ -101,8 +101,8 @@ appointmentRoute.get("/getAppointment", async (req, res) => {
   }
 });
 
-// http://localhost:4000/appointment/getAppointmentForDoctor
-appointmentRoute.get('/getAppointmentForDoctor', async (req, res) => {
+// http://localhost:4000/appointment/getAppointmentForDoctorToday
+appointmentRoute.get('/getAppointmentForDoctorToday', async (req, res) => {
   const { doctorId } = req.query;
   if (!doctorId) {
     return res.status(400).json({ error: 'Please provide doctor ID' });
@@ -112,7 +112,8 @@ appointmentRoute.get('/getAppointmentForDoctor', async (req, res) => {
     const currentDate = new Date().toISOString().split('T')[0] + 'T00:00:00Z'; // Set time to midnight
     const appointments = await appointmentSchema.find({
       doctorId: doctorId,
-      appointmentDate: currentDate
+      appointmentDate: currentDate,
+      isCompleted: false
     });
     
     if (appointments.length === 0) {
@@ -160,6 +161,54 @@ appointmentRoute.route("/updateAppointment/:id")
       res.status(500).json({ error: "Internal Server Error" });
     }
   });
+// http://localhost:4000/appointment/sendDiagnosis/:id
+appointmentRoute.post('/sendDiagnosis/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { message } = req.body;
+
+    const appointment = await appointmentSchema.findById(mongoose.Types.ObjectId(id));
+    
+    const { email: patientEmail, patientName, appointmentDate, slot } = appointment;
+    const formattedDate = moment(appointmentDate).format('MMMM D, YYYY');
+
+    const mailOptions = {
+      from: 'your-email@gmail.com',
+      to: patientEmail,
+      subject: 'Diagnosis and Appointment Summary',
+      html: `
+          <html>
+              <head>
+                  <style>
+                      body {
+                          background-color: #f0f0f0;
+                      }
+                  </style>
+              </head>
+              <body>
+                  <p>Dear ${patientName},</p>
+                  <p>Thank you for choosing Sunrise Healthcare.</p>
+                  <p>Your appointment on ${formattedDate}, at ${slot} has concluded.</p>
+                  <p>Diagnosis Message: ${message}</p>
+                  <p>We appreciate your trust in our services. If you have any further questions or concerns, please feel free to contact us.</p>
+                  <p>Best regards,</p>
+                  <p>Sunrise Healthcare Team</p>
+              </body>
+          </html>
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.error("Email not sent:", err);
+      }
+    });
+    res.status(200).json({ message: 'Diagnosis and Appointment Summary sent successfully' });
+  } catch (error) {
+    console.error('Error sending diagnosis and appointment summary:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 // http://localhost:4000/appointment/deleteAppointment/:id
 appointmentRoute.delete("/deleteAppointment/:id", async (req, res) => {
@@ -193,14 +242,34 @@ appointmentRoute.delete("/deleteAppointment/:id", async (req, res) => {
     transporter.sendMail(mailOptions, (err, data) => {
       if (err) {
         console.error("Email not sent:", err);
-      } else {
-        console.log("Email sent for appointment cancellation");
       }
     });
     res.json(appointment);
   } catch (error) {
     console.error("Error deleting appointment:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// http://localhost:4000/appointment/completeAppointment/:id
+appointmentRoute.put('/completeAppointment/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const appointment = await appointmentSchema.findByIdAndUpdate(
+      id,
+      { $set: { isCompleted: true } },
+      { new: true }
+    );
+
+    if (appointment) {
+      res.status(200).json({ success: true, message: 'Appointment marked as completed' });
+    } else {
+      res.status(404).json({ success: false, message: 'Appointment not found' });
+    }
+  } catch (error) {
+    console.error('Error completing appointment:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
 
