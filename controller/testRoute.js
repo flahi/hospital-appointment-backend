@@ -1,8 +1,16 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const nodemailer = require("nodemailer");
 const moment = require("moment");
-
 const testBookingSchema = require("../model/testBookingSchema");
+
+const transporter = nodemailer.createTransport({
+  service:"gmail",
+  auth:{
+      user:"sunrisehealthcareforyou@gmail.com",
+      pass:"nrbzeuzcqwgjsusd"
+  }
+})
 
 const testRoute = express.Router();
 
@@ -38,11 +46,14 @@ testRoute.post("/createTestAppointment", async (req, res) => {
           </html>
       `,
     };
-    console.log("Email sent:", mailOptions);
-    // Sending confirmation email
-    // Code for sending email goes here...
-
-    res.json(appointment);
+    transporter.sendMail(mailOptions, (err, data) => {
+        if (err) {
+            res.status(400).json({ error: "Email not sent" });
+        } else {
+            console.log("Email sent");
+            res.json(appointment);
+        }
+    });
   } catch (error) {
     console.error("Error creating test appointment:", error);
     res.status(500).json({ error: "Internal Server Error" });

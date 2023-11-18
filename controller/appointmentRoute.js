@@ -72,7 +72,7 @@ appointmentRoute.get("/checkAvailability", async (req, res) => {
 
     if (existingAppointments && existingAppointments.length > 0) {
       // Appointment slot is already booked
-      res.status(200).json({ available: false, message: "Slot not available for this doctor at this time" });
+      res.status(200).json({ available: false, message: "Sorry, slot not available" });
     } else {
       // Appointment slot is available
       res.status(200).json({ available: true, message: "Slot available for booking" });
