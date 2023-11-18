@@ -115,10 +115,6 @@ appointmentRoute.get('/getAppointmentForDoctorToday', async (req, res) => {
       appointmentDate: currentDate,
       isCompleted: false
     });
-    
-    if (appointments.length === 0) {
-      return res.status(200).json({ message: 'No appointments found for the day' });
-    }
     res.status(200).json(appointments);
   } catch (error) {
     console.log('error:', error);
