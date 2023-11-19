@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 const testRoute = express.Router();
 
-// Endpoint to create a test appointment
+// http://localhost:4000/test/createTestAppointment
 testRoute.post("/createTestAppointment", async (req, res) => {
   try {
     const { email, patientName, testName, testDate, slot, dob, address } = req.body;
@@ -50,7 +50,6 @@ testRoute.post("/createTestAppointment", async (req, res) => {
         if (err) {
             res.status(400).json({ error: "Email not sent" });
         } else {
-            console.log("Email sent");
             res.json(appointment);
         }
     });
@@ -60,7 +59,7 @@ testRoute.post("/createTestAppointment", async (req, res) => {
   }
 });
 
-// Endpoint to check test availability
+// http://localhost:4000/test/checkAvailability
 testRoute.get("/checkAvailability", async (req, res) => {
     const { testDate, slot } = req.query;
   
@@ -68,13 +67,7 @@ testRoute.get("/checkAvailability", async (req, res) => {
       if (!testDate || !slot) {
         return res.status(400).json({ error: "Invalid request. Missing parameters." });
       }
-
-      console.log("Received testDate:", testDate);
-      console.log("Received slot:", slot);
-  
       const formattedTestDate = new Date(testDate);
-      console.log("Formatted testDate:", formattedTestDate);
-      
       const existingTests = await testBookingSchema.findOne({
         testDate: formattedTestDate,
         slot,
@@ -96,8 +89,7 @@ testRoute.get("/checkAvailability", async (req, res) => {
     }
   });
 
-
-// Endpoint to get all test appointments
+// http://localhost:4000/test/getAllAppointments
 testRoute.get("/getAllTestAppointments", async (req, res) => {
   try {
     const testAppointments = await testBookingSchema.find();
@@ -108,7 +100,22 @@ testRoute.get("/getAllTestAppointments", async (req, res) => {
   }
 });
 
-// Endpoint to update a test appointment
+// http://localhost:4000/test/getTestAppointments
+testRoute.get("/getTestAppointments", async (req, res) => {
+  const { email } = req.query;
+  if (!email) {
+    return res.status(400).json({ error: "Please provide an email" });
+  }
+  try {
+    const tests = await testBookingSchema.find({ email: email });
+    res.status(200).json(tests);
+  } catch (error) {
+    console.log("error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// http://localhost:4000/test/updateTestAppointment/:id
 testRoute.put("/updateTestAppointment/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -121,15 +128,43 @@ testRoute.put("/updateTestAppointment/:id", async (req, res) => {
   }
 });
 
-// Endpoint to delete a test appointment
+// http://localhost:4000/test/deleteTestAppointment/:id
 testRoute.delete("/deleteTestAppointment/:id", async (req, res) => {
-  const { id } = req.params;
-
   try {
-    const deletedTestAppointment = await testBookingSchema.findByIdAndDelete(id);
-    res.json(deletedTestAppointment);
+    const test = await testBookingSchema.findByIdAndRemove(mongoose.Types.ObjectId(req.params.id));
+    const { email, patientName, testDate, slot } = test;
+    const formattedDate = moment(testDate).format('MMMM D, YYYY');
+    const mailOptions = {
+      from: "sunrisehealthcareforyou@gmail.com",
+      to: email,
+      subject: "Sunrise Healthcare - Testing Cancellation",
+      html: `
+          <html>
+              <head>
+                  <style>
+                      body {
+                          background-color: #f0f0f0; 
+                      }
+                  </style>
+              </head>
+              <body>
+                  <p>Dear ${patientName},</p>
+                  <p>Your test on ${formattedDate}, at ${slot} has been canceled.</p>
+                  <p>We apologize for any inconvenience. If you have any concerns, please contact us.</p>
+                  <p>Thank you for choosing Sunrise Healthcare.</p>
+              </body>
+          </html>
+      `,
+    };
+
+    transporter.sendMail(mailOptions, (err, data) => {
+      if (err) {
+        console.error("Email not sent:", err);
+      }
+    });
+    res.json(test);
   } catch (error) {
-    console.error("Error deleting test appointment:", error);
+    console.error("Error deleting appointment:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
