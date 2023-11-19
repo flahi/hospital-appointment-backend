@@ -86,12 +86,12 @@ appointmentRoute.get("/checkAvailability", async (req, res) => {
 
 // http://localhost:4000/appointment/getAppointment
 appointmentRoute.get("/getAppointment", async (req, res) => {
-  const { email } = req.query;
+  const { email, isCompleted } = req.query;
   if (!email) {
     return res.status(400).json({ error: "Please provide an email" });
   }
   try {
-    const appointments = await appointmentSchema.find({ email: email });
+    const appointments = await appointmentSchema.find({ email: email, isCompleted:isCompleted });
     res.status(200).json(appointments);
   } catch (error) {
     console.log("error:", error);
