@@ -102,18 +102,27 @@ testRoute.get("/getAllTestAppointments", async (req, res) => {
 
 // http://localhost:4000/test/getTestAppointments
 testRoute.get("/getTestAppointments", async (req, res) => {
-  const { email } = req.query;
-  if (!email) {
-    return res.status(400).json({ error: "Please provide an email" });
+  const { email, option } = req.query;
+  if (!email || !option) {
+    return res.status(400).json({ error: "Please provide both email and option parameters" });
   }
   try {
-    const tests = await testBookingSchema.find({ email: email });
+    let tests;
+    const today = new Date().toISOString().split('T')[0] + 'T00:00:00Z';
+    if (option === "1") {
+      tests = await testBookingSchema.find({ email: email, testDate: { $gte: today } });
+    } else if (option === "2") {
+      tests = await testBookingSchema.find({ email: email, testDate: { $lt: today } });
+    } else {
+      return res.status(400).json({ error: "Invalid option value" });
+    }
     res.status(200).json(tests);
   } catch (error) {
     console.log("error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // http://localhost:4000/test/updateTestAppointment/:id
 testRoute.put("/updateTestAppointment/:id", async (req, res) => {
