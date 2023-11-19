@@ -17,7 +17,7 @@ const appointmentRoute = express.Router();
 // http://localhost:4000/appointment/createAppointment
 appointmentRoute.post("/createAppointment", async (req, res) => {
   try {
-      const { email, patientName } = req.body;
+      const { email, patientName, doctorName } = req.body;
       const appointment = await appointmentSchema.create(req.body);
       const formattedDate = moment(appointment.appointmentDate).format('MMMM D, YYYY');
       const mailOptions = {
@@ -29,7 +29,7 @@ appointmentRoute.post("/createAppointment", async (req, res) => {
                   <head>
                       <style>
                           body {
-                              background-color: #f0f0f0; /* Set your desired background color */
+                              background-color: #f0f0f0;
                           }
                       </style>
                   </head>
@@ -37,6 +37,7 @@ appointmentRoute.post("/createAppointment", async (req, res) => {
                       <p>Dear ${patientName},</p>
                       <p>Your appointment has been booked successfully!</p>
                       <h3>Appointment Details:</h3>
+                      <p>Doctor: ${doctorName}</p>
                       <p>Date: ${formattedDate}</p>
                       <p>Slot: ${appointment.slot}</p>
                       <p>Reason for Appointment: ${appointment.reasonforappointment}</p>
@@ -236,7 +237,7 @@ appointmentRoute.delete("/deleteAppointment/:id", async (req, res) => {
               <head>
                   <style>
                       body {
-                          background-color: #f0f0f0; /* Set your desired background color */
+                          background-color: #f0f0f0; 
                       }
                   </style>
               </head>
