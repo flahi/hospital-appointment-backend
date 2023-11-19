@@ -21,7 +21,6 @@ doctorRoute.post("/createDoctor", async (req, res) => {
     });
 
     console.log('Doctor created:', newDoctor);
-    // Create a user in the users collection using the provided password and doctorId
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const createdUser = await User.create({

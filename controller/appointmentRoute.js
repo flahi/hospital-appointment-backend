@@ -92,9 +92,6 @@ appointmentRoute.get("/getAppointment", async (req, res) => {
   }
   try {
     const appointments = await appointmentSchema.find({ email: email });
-    if (appointments.length === 0) {
-      return res.status(404).json({ error: "No appointment found with the provided email" });
-    }
     res.status(200).json(appointments);
   } catch (error) {
     console.log("error:", error);
