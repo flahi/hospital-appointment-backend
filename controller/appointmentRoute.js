@@ -14,6 +14,7 @@ const transporter = nodemailer.createTransport({
 
 const appointmentRoute = express.Router();
 
+
 // http://localhost:4000/appointment/createAppointment
 appointmentRoute.post("/createAppointment", async (req, res) => {
   try {
@@ -281,5 +282,71 @@ appointmentRoute.put('/completeAppointment/:id', async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 });
+// Update the existing route to handle fetching appointments for a specific date
+appointmentRoute.get('/getAppointmentForDoctorByDate', async (req, res) => {
+  const { doctorId, date } = req.query;
+  if (!doctorId || !date) {
+    return res.status(400).json({ error: 'Please provide doctor ID and date' });
+  }
+
+  try {
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: { $gte: new Date(date), $lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000) },
+    });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments by date:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// http://localhost:4000/appointment/getAppointmentForDoctorByDateAndPatient
+appointmentRoute.get('/getAppointmentForDoctorByDateAndPatient', async (req, res) => {
+  const { doctorId, date, patientName } = req.query;
+
+  if (!doctorId || !date || !patientName) {
+    return res.status(400).json({ error: 'Please provide doctor ID, date, and patient name' });
+  }
+
+  try {
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      appointmentDate: {
+        $gte: new Date(date),
+        $lt: new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000),
+      },
+      patientName: { $regex: new RegExp(patientName, 'i') }, // Case-insensitive search
+    });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments by date and patient name:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+// http://localhost:4000/appointment/getAppointmentForDoctorByPatientName
+appointmentRoute.get('/getAppointmentForDoctorByPatientName', async (req, res) => {
+  const { doctorId, patientName } = req.query;
+
+  if (!doctorId && !patientName) {
+    return res.status(400).json({ error: 'Please provide doctor ID and patient name' });
+  }
+
+  try {
+    const appointments = await appointmentSchema.find({
+      doctorId: doctorId,
+      patientName: { $regex: new RegExp(patientName, 'i') }, // Case-insensitive search
+    });
+
+    res.status(200).json(appointments);
+  } catch (error) {
+    console.error('Error fetching appointments by patient name:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+
 
 module.exports = appointmentRoute;
