@@ -66,22 +66,30 @@ appointmentRoute.get("/checkAvailability", async (req, res) => {
   const { doctorId, appointmentDate, slot } = req.query;
 
   try {
-    const existingAppointments = await appointmentSchema.find({
+    if (!doctorId || !appointmentDate || !slot) {
+      return res.status(400).json({ error: "Invalid request. Missing parameters." });
+    }
+
+    const formattedAppointmentDate = new Date(appointmentDate);
+    const existingAppointments = await appointmentSchema.findOne({
       doctorId: doctorId,
-      appointmentDate: appointmentDate,
-      slot: slot,
+      appointmentDate: formattedAppointmentDate,
+      slot,
     });
 
-    if (existingAppointments && existingAppointments.length > 0) {
-      // Appointment slot is already booked
-      res.status(200).json({ available: false, message: "Sorry, slot not available" });
-    } else {
+    console.log("Query Parameters:", { doctorId, appointmentDate: formattedAppointmentDate, slot }); // Log query parameters
+
+    console.log("Existing Appointments:", existingAppointments);
+    if (existingAppointments === null) {
       // Appointment slot is available
-      res.status(200).json({ available: true, message: "Slot available for booking" });
+      return res.status(200).json({ available: true, message: "Slot available for booking" });
+    } else {
+      // Appointment slot is already booked
+      return res.status(200).json({ available: false, message: "Slot not available for this appointment at this time" });
     }
   } catch (error) {
-    console.error("Error checking availability:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error checking appointment availability:", error);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
@@ -148,29 +156,27 @@ appointmentRoute.get("/", async (req, res) => {
 });
 
 // http://localhost:4000/appointment/updateAppointment/:id
-appointmentRoute.route("/updateAppointment/:id")
-  .get(async (req, res) => {
-    try {
-      const appointment = await appointmentSchema.findById(mongoose.Types.ObjectId(req.params.id));
-      res.json(appointment);
-    } catch (error) {
-      console.error("Error fetching appointment:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  })
-  .put(async (req, res) => {
-    try {
-      const appointment = await appointmentSchema.findByIdAndUpdate(
-        mongoose.Types.ObjectId(req.params.id),
-        { $set: req.body },
-        { new: true }
-      );
-      res.json(appointment);
-    } catch (error) {
-      console.error("Error updating appointment:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
-  });
+appointmentRoute.put("/updateAppointment/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const { appointmentDate, slot } = req.body; // Ensure 'appointmentDate' and 'slot' are correctly extracted from 'req.body'
+
+    // Update the appointment with the provided 'id' using the received 'appointmentDate' and 'slot'
+    const updatedAppointment = await appointmentSchema.findByIdAndUpdate(
+      id,
+      { appointmentDate, slot }, // Ensure to update the correct fields in the document
+      { new: true }
+    );
+
+    res.json(updatedAppointment);
+  } catch (error) {
+    console.error("Error updating appointment:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
 // http://localhost:4000/appointment/sendDiagnosis/:id
 appointmentRoute.post('/sendDiagnosis/:id', async (req, res) => {
   try {

@@ -129,13 +129,22 @@ testRoute.put("/updateTestAppointment/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
-    const updatedTestAppointment = await testBookingSchema.findByIdAndUpdate(id, req.body, { new: true });
+    const { testDate, slot } = req.body; // Ensure 'testDate' and 'slot' are correctly extracted from 'req.body'
+
+    // Update the appointment with the provided 'id' using the received 'testDate' and 'slot'
+    const updatedTestAppointment = await testBookingSchema.findByIdAndUpdate(
+      id,
+      { testDate, slot }, // Ensure to update the correct fields in the document
+      { new: true }
+    );
+
     res.json(updatedTestAppointment);
   } catch (error) {
     console.error("Error updating test appointment:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // http://localhost:4000/test/deleteTestAppointment/:id
 testRoute.delete("/deleteTestAppointment/:id", async (req, res) => {
