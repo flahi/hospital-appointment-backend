@@ -50,11 +50,9 @@ function handleUnauthorized(req, res) {
 
 function changeDoctorPassword(req, res) {
   const { empId, newPassword } = req.body;
-  console.log('Requested empId:', empId);
 
   // Retrieve the token from the request header
   const token = req.headers.authorization;
-  console.log('Received token:', token);
 
   // Verify the token
   jwt.verify(token, secretKey, (err, decoded) => {
@@ -62,8 +60,6 @@ function changeDoctorPassword(req, res) {
       console.error('Token verification error:', err);
       return res.status(401).json({ message: "Unauthorized" });
     }
-
-    console.log('Decoded token:', decoded);
 
     // Check if the user ID from the token matches the requested user ID and role is 'doctor'
     if (decoded.empId !== empId || decoded.role !== 'doctor') {
@@ -80,7 +76,6 @@ function changeDoctorPassword(req, res) {
         // Hash the new password before updating in the database
         const hashedPassword = bcrypt.hashSync(newPassword, 10);
 
-        console.log('Updating password for:', empId);
 
         // Update the user's password with the new hashed password
         user.password = hashedPassword;

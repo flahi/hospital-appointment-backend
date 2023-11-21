@@ -51,7 +51,6 @@ appointmentRoute.post("/createAppointment", async (req, res) => {
           if (err) {
               res.status(400).json({ error: "Email not sent" });
           } else {
-              console.log("Email sent");
               res.json(appointment);
           }
       });
@@ -77,9 +76,6 @@ appointmentRoute.get("/checkAvailability", async (req, res) => {
       slot,
     });
 
-    console.log("Query Parameters:", { doctorId, appointmentDate: formattedAppointmentDate, slot }); // Log query parameters
-
-    console.log("Existing Appointments:", existingAppointments);
     if (existingAppointments === null) {
       // Appointment slot is available
       return res.status(200).json({ available: true, message: "Slot available for booking" });

@@ -72,10 +72,6 @@ testRoute.get("/checkAvailability", async (req, res) => {
         testDate: formattedTestDate,
         slot,
       });
-      
-      console.log("Query Parameters:", { testDate: formattedTestDate, slot }); // Log query parameters
-
-      console.log("Existing Tests:", existingTests);
       if (existingTests === null) {
         // Test slot is available
         return res.status(200).json({ available: true, message: "Slot available for booking" });

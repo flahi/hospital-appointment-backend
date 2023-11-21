@@ -67,7 +67,6 @@ patientOtpRoute.post("/appointment/sendOtp", async (req, res) => {
       if (err) {
         res.status(400).json({ error: "Email not sent" });
       } else {
-        console.log("Email sent");
         res.status(200).json("Email sent successfully");
       }
     });
@@ -157,7 +156,6 @@ patientOtpRoute.post("/sendOtp", async(req, res)=>{
                         res.status(400).json({error:"Email not sent"});
                     }
                     else {
-                        console.log("Email sent");
                         res.status(200).json("Email sent successfully");
                     }
                 })

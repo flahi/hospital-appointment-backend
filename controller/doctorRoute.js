@@ -20,7 +20,6 @@ doctorRoute.post("/createDoctor", async (req, res) => {
       qualification,
     });
 
-    console.log('Doctor created:', newDoctor);
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const createdUser = await User.create({
@@ -29,7 +28,6 @@ doctorRoute.post("/createDoctor", async (req, res) => {
       role: "doctor",
     });
 
-    console.log('User created:', createdUser);
 
     res.status(201).json(newDoctor);
   } catch (error) {
